@@ -9,8 +9,8 @@
 ✅ Allow form to be submitted only when the data are valid and validation is complete.
 
 
-To solve the problem, I used: `react` for ui, `axios` for asynchronous requests, `formik` for working with the form, `
-yup` for the field validation scheme, `typescript`, `eslint` and `prettier`.
+To solve the problem, I used: `React` for UI, `Axios` for asynchronous requests, `Formik` for working with the form, `
+Yup` for the field validation scheme, `Typescript`, `Eslint` and `Prettier`.
 To bypass the overcome CORS limitation, I used CORS proxy
 
 ### `npm start`
