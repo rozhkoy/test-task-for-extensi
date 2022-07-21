@@ -44,7 +44,7 @@ export const MainPage = () => {
 				{!validationStatus ? (
 					<div className="main-page__form">
 						<Formik initialValues={initialValues} validationSchema={DisplayingErrorMessagesSchema} onSubmit={(values) => sendEmail(values.email)}>
-							{({ errors, touched }) => {
+							{({ errors, touched, values }) => {
 								return (
 									<Form className="form">
 										<h2>Verify your email</h2>
@@ -57,7 +57,7 @@ export const MainPage = () => {
 										</div>
 										<div className="form__item-wrap">
 											<Field type="email" placeholder="Email" name="email" className="form__input" />
-											{errors.email && touched.email ? <div className="form__item-error">{errors.email}</div> : null}
+											{errors.email && values.email ? <div className="form__item-error">{errors.email}</div> : null}
 										</div>
 										<div className="form__item-wrap">
 											<Field type="date" placeholder="birth of data" name="data" className="form__input" />
