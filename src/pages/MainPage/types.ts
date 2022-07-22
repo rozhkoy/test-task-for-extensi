@@ -3,7 +3,6 @@ export interface IInitialValues {
 	surname: string;
 	data: string;
 	gender: string;
-	email: string;
 }
 
 export interface IResponseValidationEmail {
@@ -11,4 +10,9 @@ export interface IResponseValidationEmail {
 	status_message: string;
 	validation_status: boolean;
 	email: string;
+}
+
+export interface IEmail {
+	status: boolean;
+	message: string;
 }
