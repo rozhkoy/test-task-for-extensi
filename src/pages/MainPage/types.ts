@@ -1,8 +1,9 @@
 export interface IInitialValues {
-	name: string;
-	surname: string;
-	data: string;
-	gender: string;
+	name?: string;
+	surname?: string;
+	data?: string;
+	gender?: string;
+	email?: string;
 }
 
 export interface IResponseValidationEmail {

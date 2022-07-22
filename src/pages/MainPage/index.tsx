@@ -1,67 +1,54 @@
 import './style.scss';
 import { Field, Form, Formik } from 'formik';
 import { IEmail, IInitialValues } from './types';
-import * as Yup from 'yup';
 import React, { useState } from 'react';
 import { requestValidateEmail } from './api';
 
 export const MainPage = () => {
 	const [validationStatus, setValidationStatus] = useState<boolean>(false);
 	const [email, setEmail] = useState<string>('');
-	const [emailStatus, setEmailStatus] = useState<IEmail>({ status: false, message: '' });
 
 	const initialValues: IInitialValues = {
 		name: '',
 		surname: '',
 		data: '',
 		gender: '',
+		email: '',
 	};
 
-	const DisplayingErrorMessagesSchema = Yup.object().shape({
-		name: Yup.string().min(2, 'Too Short!').max(50, 'Too Long!').required('Required'),
-		data: Yup.string().required('Required'),
-		gender: Yup.string().required('Required'),
-	});
+	const validate = async (values: IInitialValues) => {
+		const errors: IInitialValues = {};
+		if (!values.name) {
+			errors.name = 'Required';
+		}
+
+		if (!values.email) {
+			errors.email = 'Required';
+		} else {
+			const response = await requestValidateEmail(values.email);
+			if (!response.data.validation_status) {
+				errors.email = 'Not valid mail';
+			}
+		}
+
+		if (!values.gender) {
+			errors.gender = 'Required';
+		}
+
+		return errors;
+	};
 
 	async function sendEmail(email: string) {
+		console.log('sendMial');
 		alert('Data for verification departure');
 		try {
-			if (emailStatus.status) {
-				const response = await requestValidateEmail(email);
-				console.log(response.data);
-				if (response.data.status == 200) {
-					setValidationStatus(true);
-					setEmail(response.data.email);
-				}
+			const response = await requestValidateEmail(email);
+			if (response.data.status == 200) {
+				setValidationStatus(true);
+				setEmail(response.data.email);
 			}
 		} catch (e) {
 			alert(e);
-		}
-	}
-
-	async function validateEmail(e: React.ChangeEvent<HTMLInputElement>) {
-		setEmail(e.target.value);
-		const response = await requestValidateEmail(e.target.value);
-		if (!response.data.validation_status) {
-			setEmailStatus((prevState) => {
-				prevState.message = 'Not valid email';
-				return prevState;
-			});
-		} else {
-			setEmailStatus((prevState) => {
-				prevState.status = true;
-				prevState.message = '';
-				return prevState;
-			});
-		}
-	}
-
-	function buttonHandler() {
-		if (!emailStatus.status) {
-			setEmailStatus((prevState) => {
-				prevState.message = 'Required';
-				return prevState;
-			});
 		}
 	}
 
@@ -70,8 +57,8 @@ export const MainPage = () => {
 			<div className="main-page__container">
 				{!validationStatus ? (
 					<div className="main-page__form">
-						<Formik initialValues={initialValues} validationSchema={DisplayingErrorMessagesSchema} onSubmit={() => sendEmail(email)}>
-							{({ errors, touched }) => {
+						<Formik initialValues={initialValues} validate={validate} onSubmit={(values) => sendEmail(values.email ? values.email : '')}>
+							{({ errors, touched, values, isValid, dirty }) => {
 								return (
 									<Form className="form">
 										<h2>Verify your email</h2>
@@ -83,12 +70,11 @@ export const MainPage = () => {
 											<Field type="text" placeholder="Surname" name="surname" className="form__input" />
 										</div>
 										<div className="form__item-wrap">
-											<Field type="email" placeholder="Email" value={email} onChange={validateEmail} name="email" className="form__input" />
-											<div className="form__item-error">{emailStatus.message}</div>
+											<Field type="email" placeholder="Email" name="email" className="form__input" />
+											{errors.email && (touched.email || values.email) ? <div className="form__item-error">{errors.email}</div> : null}
 										</div>
 										<div className="form__item-wrap">
 											<Field type="date" placeholder="birth of data" name="data" className="form__input" />
-											{errors.data && touched.data ? <div className="form__item-error">{errors.data}</div> : null}
 										</div>
 										<div className="form__radio-btn-wrap">
 											<div className="form__radio-btn-wrap-item">
@@ -105,7 +91,7 @@ export const MainPage = () => {
 											</div>
 											{errors.gender && touched.gender ? <div className="form__item-error">{errors.gender}</div> : null}
 										</div>
-										<button onClick={buttonHandler} className="form__btn" type="submit">
+										<button className="form__btn" type="submit">
 											Verify
 										</button>
 									</Form>
@@ -117,13 +103,7 @@ export const MainPage = () => {
 					<div className="main-page__verify-status">
 						<h2 className="verify__status">Your email verified</h2>
 						<div className="verify__email">{email}</div>
-						<button
-							className="form__btn"
-							onClick={() => {
-								setValidationStatus(false);
-								setEmailStatus({ status: false, message: '' });
-								setEmail('');
-							}}>
+						<button className="form__btn" onClick={() => setValidationStatus(false)}>
 							Back to verify
 						</button>
 					</div>
