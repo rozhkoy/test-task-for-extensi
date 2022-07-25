@@ -39,7 +39,6 @@ export const MainPage = () => {
 	};
 
 	async function sendEmail(email: string) {
-		console.log('sendMial');
 		alert('Data for verification departure');
 		try {
 			const response = await requestValidateEmail(email);
